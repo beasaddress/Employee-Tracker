@@ -18,3 +18,13 @@ CREATE TABLE role(
     PRIMARY KEY(id)
 
 );
+
+CREATE TABLE employee(
+    id INT NOT NULL AUTO_INCREMENT,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    role _id VARCHAR(30),
+    manager_id INT,
+    PRIMARY KEY (id)
+    FOREIGN KEY (role_id) REFERENCE role(job_title) ON DELETE SET NULL
+);
