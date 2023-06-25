@@ -1,11 +1,11 @@
-INSERT INTO department (name, manager)
+INSERT INTO department (name, manager_id)
 VALUES ("Finance", "Michael Scott"),
         ("Legal", "Creed Bratton"),
-        ("Administration", "Pam Beesly"),
+        ("Administration", "Michael Scott"),
         ("Marketing", "Kelly Kapoor"),
         ("Tech", "Jim Halpert"),
-        ("Board of Directors"),
-        ("HR");
+        ("Board of Directors", "Michael Scott"),
+        ("HR", "Toby Flenderson");
 
 INSERT INTO role (job_title, salary, department_id)
 VALUES ("Accounts Payable", 65000, 1),
@@ -17,4 +17,11 @@ VALUES ("Accounts Payable", 65000, 1),
         ("HR Director", 80000, 7);
 
 INSERT INTO employee (first_name, last_name, role_id)
-        ("Angela", "Martin", 1, )
+VALUES  ("Angela", "Martin", 1),
+        ("Andy", "Bernard", 2),
+        ("Taylor", "Wood", 5),
+        ("Alicia", "Keys", 4),
+        ("Gwen", "Stefani", 6),
+        ("Jordan", "Belfort", 7),
+        ("Lana", "Del Ray", 1),
+        ("Pam", "Beesly", 3);
