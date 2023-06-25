@@ -11,5 +11,26 @@ const db = mysql.createConnection(
         database: 'employees_db'
     },
     console.log(`Connected to the employees Database of Beatriz Beth Technologies Inc`)
-    
-);
+    );
+
+    //a function that will start the functionality of the application once the connection is created to the db
+    function startInquirer() {
+        inquirer
+            .prompt([
+                {
+                    type: "list",
+                    name: "start",
+                    message: "Welcome to the Employee Database. What would you like to do?",
+                    choices: ["View", "Add", "Update", "Exit"]
+                }
+            ]).then(function(response){
+                switch(response.startInquirer) {
+                    case "View":
+                        views();
+                        break;
+                }
+            })
+    }
+
+
+
