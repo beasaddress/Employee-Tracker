@@ -28,8 +28,16 @@ const db = mysql.createConnection(
                     case "View":
                         views();
                         break;
+                    case "Add":
+                        add();
+                        break;
+                    case "Update":
+                        update();
+                        break;
+                    case "Exit":
+                        console.log("Database closed. Goodbye.");
                 }
-            })
+            });
     }
 
 
