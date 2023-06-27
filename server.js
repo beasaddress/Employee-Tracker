@@ -36,6 +36,8 @@ const db = mysql.createConnection(
                         break;
                     case "Exit":
                         console.log("Database closed. Goodbye.");
+                } testingSOmething() {
+                    
                 }
             });
     }
