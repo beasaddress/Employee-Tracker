@@ -2,7 +2,7 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 //const PORT = process.env.PORT || 3006;
-const table = require("console.table");
+const table = require('console.table');
 
 //creating the connection to the database
 const db = mysql.createConnection(
@@ -77,7 +77,7 @@ function viewEmployees() {
     db.query("SELECT e.id AS employee_id, e.first_name, e.last_name, r.id AS role_id, r.job_title, d.name AS department, r.salary, d.manager_id AS manager_name FROM employee e JOIN role r ON e.role_id = r.id JOIN department d ON r.department_id = d.id LEFT JOIN employee m ON d.manager_id = m.id",
     function(err, results) {
         if(err) throw err;
-        console.log(results);
+        console.table(results);
         startInquirer();
     });
 }
@@ -100,4 +100,29 @@ function viewDepartments() {
     });
 }
 
+//functions that will add data to the database table
+
+function add() {
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                name: "add",
+                message: "What would you like to add?",
+                choices: ["Department", "Role", "Employee"]
+            }
+    ]).then(function(response){
+        switch(response.add){
+            case "Department":
+                addDepartment();
+                break;
+            case "Role":
+                addRole();
+                break;
+            case "Employee":
+                addEmployee();
+                break;
+        }
+    })
+}
 
