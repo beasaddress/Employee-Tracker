@@ -82,11 +82,21 @@ function viewEmployees() {
 }
 
 function viewRoles() {
-
+    db.query("SELECT role.job_title, role.id AS role_id, department.name AS department_name, role.salary FROM role LEFT JOIN department ON role.department_id = department.id",
+    function (err, results){
+        if(err) throw err;
+        console.log(results);
+        startInquirer();
+    });
 }
 
 function viewDepartments() {
-
+    db.query("SELECT id, name FROM department ORDER BY id",
+    function (err, results) {
+        if(err) throw err;
+        console.log(results);
+        startInquirer();
+    });
 }
 
 
