@@ -1,7 +1,10 @@
 //importing dependencies
 const mysql = require('mysql');
 const inquirer = require('inquirer');
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3006;
+
+
+
 
 
 
@@ -10,13 +13,16 @@ const db = mysql.createConnection(
     {
         host: 'localhost',
         port: PORT,
-        user: 'root',
+        user: 'root',        
         password: 'securesql',
         database: 'employees_db'
-    },
-    console.log(`Connected to the employees Database of Beatriz Beth Technologies Inc`)
-    );
-startInquirer();
+    });
+ db.connect(function(err){
+        if(err) throw err;
+        console.log("SQL Connected");
+        startInquirer();
+    });
+
 
     //a function that will start the functionality of the application once the connection is created to the db
 function startInquirer() {
@@ -29,7 +35,7 @@ function startInquirer() {
                 choices: ["View", "Add", "Update", "Exit"]
             }
         ]).then(function(response){
-            switch(response.startInquirer) {
+            switch(response.start) {
                 case "View":
                     view();
                     break;
@@ -87,3 +93,5 @@ function viewRoles() {
 function viewEmployees() {
 
     }
+
+
