@@ -196,3 +196,33 @@ function addRole() {
         });
     });
 }
+function addEmployee(){
+    inquirer.prompt([
+        {
+            name: "firstName",
+            type: "input",
+            message: "Enter the new employee's first name."
+        },
+        {
+            name: "lastName",
+            type: "input",
+            message: "Enter the new employee's last name",
+        },
+        {
+            name: "role_id",
+            type: "input",
+            message: "Enter the new employee's role ID"
+        }
+    ]).then(answers => {
+        const query = `INSERT INTO employee (first_name, last_name, role_id) VALUES ('${answers.firstName}', '${answers.lastName}', '${answers.role_id}')`;
+
+        db.connect(err => {
+            if (err) throw err;
+            db.query(query, error => {
+                if (error) throw error;
+                console.log('New employee has been added to to the database');
+                db.end();
+            });
+        });
+    });
+}
