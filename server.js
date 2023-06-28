@@ -232,6 +232,8 @@ function addEmployee(){
 function updateEmployee() {
     //because the user has to 'select' a user based on acceptance criteria, they will have to choose an answer based on the current list 
     //of employees from the database so we'll use db.query first before inquirer prompt
+    displayCurrentDb();
+
     db.query('SELECT * FROM employee',
     function (err, results){
         if (err) throw err;
@@ -246,8 +248,10 @@ function updateEmployee() {
                         let choiceList = [];
                         for(i=0; i< results.length; i++)
                         {
-                            const fullName = `${results[i].first_name} ${results[i].last_name}`;
-                            choiceList.push(fullName);
+                            const firstName = `${results[i].first_name}`;
+                           // const first = `${results[i].first_name}`;
+                           // const last = `${results[i].last_name}`;
+                            choiceList.push(firstName);
                         }
                         return choiceList;
                     },
@@ -255,7 +259,7 @@ function updateEmployee() {
                 }
         ]).then(function(answer){
             const selectedEmployee = answer.choice;
-            db.query("SELECT * FROM employee",
+            db.query("SELECT * FROM role",
             function(err, results){
                 if(err) throw err;
             inquirer.prompt([
@@ -264,11 +268,36 @@ function updateEmployee() {
                     type: "rawlist",
                     choices: function(){
                         var choiceList = [];
-                        
-                    }
+                        for(i=0; i<results.length; i++){
+                            choiceList.push(results[i].job_title)
+                        }
+                        return choiceList;
+                    },
+                    message: "Select their new role"
                 }
-            ])
+            ]).then(answers => {
+                const newRole = answers.newRole;
+                const query = `UPDATE role SET job_title = ${newRole} WHERE first_name = ${selectedEmployee}'`;
+                db.connect(err => {
+                    if (err) throw err;
+                    db.query(query, error => {
+                        if (error) throw error;
+                        console.log("Employee has been updated with new role");
+                        db.end();
+                    });
+                })
+            })
             })
         })
     })
 }
+
+function displayCurrentDb() {
+    var query = "SELECT * FROM employee JOIN role ON employee.role_id = role.id JOIN department on role.department_id = department.id";
+    db.query(query, function(err, results) {
+        if(err) throw err;
+        console.log("Current Employee Database:");
+        console.log(results);
+    });
+}
+
