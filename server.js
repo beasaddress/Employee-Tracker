@@ -39,7 +39,7 @@ function startInquirer() {
                     add();
                     break;
                 case "Update":
-                    update();
+                    updateEmployee();
                     break;
                 case "Exit":
                     console.log("Database closed. Goodbye.");
@@ -225,4 +225,50 @@ function addEmployee(){
             });
         });
     });
+}
+
+//a function that will give the user the ability to update an employees role
+
+function updateEmployee() {
+    //because the user has to 'select' a user based on acceptance criteria, they will have to choose an answer based on the current list 
+    //of employees from the database so we'll use db.query first before inquirer prompt
+    db.query('SELECT * FROM employee',
+    function (err, results){
+        if (err) throw err;
+        inquirer
+            .prompt([
+                {
+                    name: "choice",
+                    type: "rawlist",
+                    //dynamically displaying the list by creating an empty array, then using a for loop to
+                    //iterate each of the results, then pushing the names into the array, then displaying that array as choices for the user
+                    choices: function(){
+                        let choiceList = [];
+                        for(i=0; i< results.length; i++)
+                        {
+                            const fullName = `${results[i].first_name} ${results[i].last_name}`;
+                            choiceList.push(fullName);
+                        }
+                        return choiceList;
+                    },
+                    message: "Select an employee to update"
+                }
+        ]).then(function(answer){
+            const selectedEmployee = answer.choice;
+            db.query("SELECT * FROM employee",
+            function(err, results){
+                if(err) throw err;
+            inquirer.prompt([
+                {
+                    name: "role",
+                    type: "rawlist",
+                    choices: function(){
+                        var choiceList = [];
+                        
+                    }
+                }
+            ])
+            })
+        })
+    })
 }
