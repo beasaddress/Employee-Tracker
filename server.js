@@ -2,7 +2,7 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 //const PORT = process.env.PORT || 3006;
-//const table = require('console.table');
+const consoleTable = require('console.table');
 
 //creating the connection to the database
 const db = mysql.createConnection(
@@ -77,7 +77,7 @@ function viewEmployees() {
     db.query("SELECT e.id AS employee_id, e.first_name, e.last_name, r.id AS role_id, r.job_title, d.name AS department, r.salary, d.manager_id AS manager_name FROM employee e JOIN role r ON e.role_id = r.id JOIN department d ON r.department_id = d.id LEFT JOIN employee m ON d.manager_id = m.id",
     function(err, results) {
         if(err) throw err;
-        console.log(results);
+        console.table(results);
         startInquirer();
     });
 }
@@ -86,7 +86,7 @@ function viewRoles() {
     db.query("SELECT role.job_title, role.id AS role_id, department.name AS department_name, role.salary FROM role LEFT JOIN department ON role.department_id = department.id",
     function (err, results){
         if(err) throw err;
-        console.log(results);
+        console.table(results);
         startInquirer();
     });
 }
@@ -95,7 +95,7 @@ function viewDepartments() {
     db.query("SELECT id, name FROM department ORDER BY id",
     function (err, results) {
         if(err) throw err;
-        console.log(results);
+        console.table(results);
         startInquirer();
     });
 }
@@ -231,8 +231,12 @@ function addEmployee(){
 
 function updateEmployee() {
     //because the user has to 'select' a user based on acceptance criteria, they will have to choose an answer based on the current list 
-    //of employees from the database so we'll use db.query first before inquirer prompt
-    displayCurrentDb();
+    //of employees from the database so we'll use db.query first before inquirer prompt so that we can access the db to generate a list
+
+    //going to display an employee table to the user so they only have to select first names. I found this easier because when i showed them full names, 
+    //i found it hard to grab their answer and put it inside a variable and place it in a db query as a template 
+    //literal bc their answer would technically bc two different values from the employee table (first AND last name) 
+    viewEmployees();
 
     db.query('SELECT * FROM employee',
     function (err, results){
@@ -257,6 +261,7 @@ function updateEmployee() {
                     },
                     message: "Select an employee to update"
                 }
+                
         ]).then(function(answer){
             const selectedEmployee = answer.choice;
             db.query("SELECT * FROM role",
@@ -276,28 +281,48 @@ function updateEmployee() {
                     message: "Select their new role"
                 }
             ]).then(answers => {
-                const newRole = answers.newRole;
-                const query = `UPDATE role SET job_title = ${newRole} WHERE first_name = ${selectedEmployee}'`;
-                db.connect(err => {
-                    if (err) throw err;
-                    db.query(query, error => {
-                        if (error) throw error;
-                        console.log("Employee has been updated with new role");
-                        db.end();
-                    });
-                })
+                const newJobTitle = answers.newJobTitle;
+                //using a new method here...since employee and role are two different tables, but i need to update a job_title based on an employee's first name,
+                //i will need a "transaction" of sql statements that should work together as a single logical operation
+                    db.beginTransaction(function (err) {
+                        if (err) throw err;
+                        //update employees job title INSIDE employee table
+                        const updateEmployeeTable = `UPDATE employee SET role_id = (SELECT id FROM role WHERE job_title = '${newJobTitle}') WHERE first_name = '${selectedEmployee}'`;
+
+                        db.query(updateEmployeeTable, function (err, results) {
+                            if (err) {
+                                //a can also use a "rollback" which basically is paired with a callback error
+                                //the rollback will undo all the new changes from the transaction statements if an error occurs.
+                                db.rollback(function () {
+                                    throw err;
+                                });
+                            }
+                            const updateRoleTable = `UPDATE role SET job_title = '${newJobTitle}' WHERE id = (SELECT role_id FROM employee WHERE first_name = '${selectedEmployee}')`;
+                            db.query(updateRoleTable, function (err, result) {
+                                if (err) {
+                                    //if an error occurs when updating the role table, the rollback method will rollback the changes and reuturn it to its original state
+                                    db.rollback(function () {
+                                        throw err;
+                                    });
+                                }
+                                //if there werent any errors, "commit" function should permanently apply all the changes 
+                                //to the database that were made with the transaction of two queries/sql statements
+                                db.commit(function (err) {
+                                    if (err) {
+                                        db.rollback(function () {
+                                            throw err;
+                                        });
+                                    }
+                                    console.log("Employee's role has been updated!");
+                                });
+                            })
+                        })
+                    })
             })
             })
         })
     })
 }
 
-function displayCurrentDb() {
-    var query = "SELECT * FROM employee JOIN role ON employee.role_id = role.id JOIN department on role.department_id = department.id";
-    db.query(query, function(err, results) {
-        if(err) throw err;
-        console.log("Current Employee Database:");
-        console.log(results);
-    });
-}
+
 
