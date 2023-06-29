@@ -1,5 +1,5 @@
 # Employee Tracker
-by Beatriz Sandoval ![Github license](https://img.shields.io/badge/license--yellowgreen.svg)
+by Beatriz Sandoval ![Github license](https://img.shields.io/badge/license-MIT-yellowgreen.svg)
 
 ## Table of Contents
 
@@ -39,4 +39,4 @@ Use best practices
 N/A
 
 ## License
-This application is covered under the  license.
+This application is covered under the MIT license.
