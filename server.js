@@ -147,7 +147,7 @@ function addDepartment() {
             db.query(query, error => {
                 if (error) throw error;
                 console.log("New department has been added");
-                db.end();
+                //db.end();
                 startInquirer();
             });
         });
@@ -191,7 +191,7 @@ function addRole() {
             db.query(query, error => {
                 if (error) throw error;
                 console.log('New role has been added to to the database');
-                db.end();
+                startInquirer();
             });
         });
     });
@@ -221,7 +221,7 @@ function addEmployee(){
             db.query(query, error => {
                 if (error) throw error;
                 console.log('New employee has been added to to the database');
-                db.end();
+                startInquirer();
             });
         });
     });
@@ -259,7 +259,7 @@ function updateEmployee() {
                         }
                         return choiceList;
                     },
-                    message: "Select an employee to update"
+                    message: "Reference the table above and select an employee to update"
                 }
                 
         ]).then(function(answer){
@@ -314,6 +314,7 @@ function updateEmployee() {
                                         });
                                     }
                                     console.log("Employee's role has been updated!");
+                                    startInquirer();
                                 });
                             })
                         })
